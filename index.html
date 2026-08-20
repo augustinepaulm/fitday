@@ -240,7 +240,7 @@
   <div class="seg" id="seg" role="tablist" aria-label="Section">
     <button data-tab="workout" class="is-on">Workout</button>
     <button data-tab="meals">Meals</button>
-    <button data-tab="supps">Supps</button>
+    <button data-tab="supps">Daily</button>
   </div>
 
   <div class="progress-row">
@@ -262,127 +262,149 @@
 </main>
 
 <script>
-/* ================= DATA (PROGRAM v7 — PT-integrated rebuild, week 3 of 12 from Sun Aug 16) ================= */
+/* ================= DATA (PROGRAM v9.1 — PT layer placed per day) ================= */
+const PT_A_ITEMS = [
+  {n:"Physio Ball Bridge w/ Knee Flexion", s:"3 × 10"},
+  {n:"Anterior Step Downs", s:"2 × 10/side · 3-sec lowering"},
+  {n:"Eccentric Heel Raise", s:"3 × 10 · slow"},
+];
+const PT_B_ITEMS = [
+  {n:"Knee-to-Wall Rocks", s:"× 12/side"},
+  {n:"90/90 Both Positions", s:"× 10"},
+  {n:"Thoracic Open-Books", s:"× 8/side"},
+  {n:"Deep Squat Hold", s:"2 × 30 sec"},
+  {n:"Wall Slides", s:"× 10"},
+  {n:"Single-Leg Stance", s:"3 × 30 sec/side"},
+];
+function ptLayer(noteA, skipStepDowns, noteB){
+  const a = PT_A_ITEMS.filter(x => !skipStepDowns || x.n !== "Anterior Step Downs")
+                      .map(x => Object.assign({g:"PT-A · Knee · " + noteA}, x));
+  const b = PT_B_ITEMS.map(x => Object.assign({g:"PT-B · Mobility / Balance" + (noteB ? " · " + noteB : "")}, x));
+  return a.concat(b);
+}
+
 const DAYS = {
-  0:{name:"Sunday", focus:"Legs #1 · Quad-Biased + Back Block 1", hue:"#3B7DD8",
+  0:{name:"Sunday", focus:"Legs #1 · Loaded + Back Block 1 + Obliques", hue:"#3B7DD8",
     kcal:"1,900", burn:"—", p:"110–133g", c:"—", f:"—",
     workout:[
-      {n:"PT Warm-Up Block", sr:"~20 min", cue:"Walk 8 min → iso hamstring set 1×10 (10s holds) → Captain Morgan w/ hip flexion 2×10 (5s) → calf stretches → BW box squats 2×10 → ramp sets"},
-      {n:"Parallel Box Squat", sr:"4 × 8", cue:"Tempo 3-1-1 · RPE 6–7"},
+      {n:"Warm-Up Block", sr:"~20 min", cue:"Walk 8 min → iso hamstring set 1×10 (10s holds) → Captain Morgan 2×10 (5s) → calf stretches → BW box squats 2×10 → ramp sets"},
+      {n:"Box Squat", sr:"5 × 8 @ 175 lb", cue:"5th set new in v9 · +5–10 lb/wk while mornings score 0–1"},
       {n:"Top-Half Leg Press", sr:"3 × 10-12", cue:"Top half of range only"},
       {n:"Leg Extension (top-half)", sr:"2 × 12", cue:"Light"},
-      {n:"KB RDL", sr:"3 × 10", cue:"PT slot (replaces barbell RDL) · start ~24–32 kg KB, progress when 3×10 is RPE ≤7 · load ceiling: confirm with PT"},
+      {n:"KB RDL", sr:"3 × 10 @ 28 kg", cue:"Load ceiling still open with PT"},
+      {n:"Long Lever Bridge", sr:"3 × 10-12", cue:"2-sec squeeze · moved here from old Friday"},
       {n:"Hip Adduction", sr:"3 × 15", cue:"Machine"},
       {n:"Hip Abduction", sr:"3 × 15", cue:"Machine"},
-      {n:"Eccentric Heel Raise", sr:"3 × 10", cue:"Up on both feet, shift to left leg, lower 3–4 sec · gastroc driver: treat with main-lift seriousness · note left-leg quality (shaking, pain, control)"},
       {n:"Terminal Knee Extensions", sr:"3 × 15", cue:"Band"},
       {n:"Renegade Row", sr:"3 × 10", cue:"Back Block 1 starts here (5 items) · counts as pulling volume"},
       {n:"Pallof Press", sr:"3 × 10", cue:"Anti-rotation, slow press-out"},
       {n:"Plank w/ Hip Extensions", sr:"3 × 10", cue:"Hips level, no rocking"},
       {n:"Stir the Pot", sr:"3 × 10", cue:"On ball, small controlled circles"},
       {n:"Type I @ Wall", sr:"10 × 10s", cue:"Wall hold, per back program"},
-      {n:"Cooldown", sr:"5 min", cue:"Walk 5 min · couch / hamstring / calf stretches"},
+      {n:"Side Plank", sr:"3 × 30s", cue:"Obliques day · Pallof already covered in the block"},
+      {n:"Daily PT Layer", sr:"→ Daily tab", cue:"After cooldown stretches"},
     ],
-    meals:[], supps:[]},
+    meals:[], supps:ptLayer("after cooldown stretches", false, "")},
 
-  1:{name:"Monday", focus:"Push · Chest / Shoulders / Triceps + Upper Abs", hue:"#E86A5E",
+  1:{name:"Monday", focus:"Push · Upper Abs", hue:"#E86A5E",
     kcal:"1,900", burn:"—", p:"110–133g", c:"—", f:"—",
     workout:[
-      {n:"Bench Press", sr:"4 × 6-8", cue:"Main press of the week"},
-      {n:"Incline DB Press", sr:"3 × 10", cue:"Upper chest focus"},
-      {n:"Dips or High-to-Low Fly", sr:"3 × 10-12", cue:"Pick one"},
-      {n:"Overhead Press", sr:"3 × 8-10", cue:"Full lockout"},
+      {n:"Warm-Up Block", sr:"~10 min", cue:"Incline walk 5 min → pull-aparts → band ext rotations → push-ups → ramp"},
+      {n:"Bench Press", sr:"4 × 6-8 @ 135", cue:"Elbows ~45°"},
+      {n:"Incline DB Press (30°)", sr:"3 × 10", cue:"Upper chest focus"},
+      {n:"High-to-Low Cable Fly", sr:"3 × 10-12", cue:"Squeeze at bottom"},
+      {n:"Seated DB OHP", sr:"3 × 8-10", cue:"Skip if shoulder is active"},
       {n:"Lateral Raises", sr:"4 × 12-15", cue:"Controlled, no swing"},
       {n:"Overhead Triceps (heavy)", sr:"3 × 8-10", cue:"Long head, full stretch"},
       {n:"Rope Pushdown", sr:"3 × 12-15", cue:"Elbows pinned"},
       {n:"Reverse-Grip Pushdown", sr:"3 × 15", cue:"Light, strict"},
       {n:"Cable or Decline Crunch", sr:"3 × 12-15", cue:"Upper abs"},
       {n:"Plank", sr:"3 × 40s", cue:"Core tight"},
-      {n:"Seated Bent-Knee Calf Isometrics", sr:"5 × 30s", cue:"Only on days without eccentric heel raises, until PT answers the frequency question"},
     ],
-    meals:[], supps:[]},
+    meals:[], supps:ptLayer("home, morning or evening (same slot daily for habit)", false, "")},
 
-  2:{name:"Tuesday", focus:"Pull · Back / Biceps + Lower Abs", hue:"#2E9E63",
+  2:{name:"Tuesday", focus:"Pull · Lower Abs + Cuff + Z2", hue:"#2E9E63",
     kcal:"1,900", burn:"—", p:"110–133g", c:"—", f:"—",
     workout:[
-      {n:"Pull-Ups", sr:"4 × 6-10", cue:"Full hang to chin over"},
+      {n:"Pull-Ups", sr:"4 × 6-8", cue:"Full hang to chin over"},
       {n:"Chest-Supported Row", sr:"4 × 8-10", cue:"Squeeze at top"},
-      {n:"Straight-Arm Pulldown", sr:"2 × 12", cue:"Reduced this week-type: Sunday renegade rows count as pulling volume"},
+      {n:"Straight-Arm Pulldown", sr:"2 × 12", cue:"Lats, long arc"},
       {n:"Face Pulls", sr:"3 × 15-20", cue:"Rear delts, external rotation"},
       {n:"Reverse Pec-Deck", sr:"3 × 15", cue:"Light, strict"},
-      {n:"Incline Curl", sr:"3 × 10-12", cue:"Full stretch at bottom"},
+      {n:"Incline DB Curl", sr:"3 × 10-12", cue:"Full stretch at bottom"},
       {n:"Preacher Curl", sr:"4 × 10-12", cue:"No swing"},
       {n:"Hammer Curl", sr:"4 × 12", cue:"Neutral grip"},
+      {n:"Side-Lying External Rotations", sr:"2 × 15/side", cue:"Cuff work, light"},
       {n:"Bird Dogs + McGill Curl-Up", sr:"—", cue:"Back-care staples, quality reps"},
+      {n:"Dead Hangs", sr:"2 × 30s", cue:"Relax and decompress"},
       {n:"Hanging Leg Raises", sr:"3 × 12", cue:"Lower abs, no momentum"},
       {n:"Dead Bugs", sr:"3 × 10/side", cue:"Low back pressed down"},
-      {n:"Dead Hangs", sr:"2 × 30s", cue:"Relax and decompress"},
-      {n:"Seated Bent-Knee Calf Isometrics", sr:"5 × 30s", cue:"Only on days without eccentric heel raises"},
+      {n:"Post-Lift Incline Walk", sr:"20 min", cue:"Zone 2, easy"},
     ],
-    meals:[], supps:[]},
+    meals:[], supps:ptLayer("gym after the walk, or home evening", false, "")},
 
-  3:{name:"Wednesday", focus:"Zone 2 Cardio + Back Block 2", hue:"#E8B93E",
+  3:{name:"Wednesday", focus:"Legs #2 · Hinge / Glute + Obliques", hue:"#7A5CD6",
     kcal:"1,900", burn:"—", p:"110–133g", c:"—", f:"—",
     workout:[
-      {n:"Zone 2 Cardio", sr:"40 min", cue:"Incline walk / pool / elliptical heels-down · conversational pace"},
-      {n:"Mobility", sr:"8 min", cue:"Standard mobility circuit"},
-      {n:"Quadruped Hover w/ KB Pass", sr:"3 × 10", cue:"Back Block 2 starts here (5 items)"},
-      {n:"Standing Trunk Rotations w/ Band", sr:"3 × 10", cue:"Controlled, ribs down"},
-      {n:"Plank w/ Hip Abduction", sr:"3 × 10", cue:"Hips level"},
-      {n:"SL RDL w/ KB", sr:"3 × 10", cue:"Light · this is the week's back-program hinge, it covers Friday's SL-RDL slot"},
-      {n:"Plank Roll-Outs on Ball", sr:"3 × 10", cue:"Slow, no low-back sag"},
-      {n:"Eccentric Heel Raise", sr:"3 × 10", cue:"Midweek dose #2 · up on both feet, lower on left 3–4 sec · note left-leg quality"},
-    ],
-    meals:[], supps:[]},
-
-  4:{name:"Thursday", focus:"Light Day · Walk + Mobility", hue:"#8DA0B8",
-    kcal:"1,900", burn:"—", p:"110–133g", c:"—", f:"—",
-    workout:[
-      {n:"Easy Walk", sr:"30–45 min", cue:"Easy pace · no abs, no loading today"},
-      {n:"Mobility", sr:"8 min", cue:"Standard circuit"},
-      {n:"Seated Bent-Knee Calf Isometrics", sr:"5 × 30s", cue:"Only on days without eccentric heel raises"},
-    ],
-    meals:[], supps:[]},
-
-  5:{name:"Friday", focus:"Legs #2 · Hinge / Glute + Upper Abs", hue:"#7A5CD6",
-    kcal:"1,900", burn:"—", p:"110–133g", c:"—", f:"—",
-    workout:[
-      {n:"PT Warm-Up Block", sr:"~18 min", cue:"Walk 8 min → iso hamstring set 1×10 → Captain Morgan 2×10 → glute bridges 2×15 → ramp"},
-      {n:"Hip Thrust", sr:"4 × 10", cue:"Heavy · 2-sec squeeze at top"},
-      {n:"Goblet Split Squat (rear foot elevated)", sr:"3 × 10/side", cue:"PT slot (replaces pull-through) · front knee at 90°, tracking over ankle · left leg first while fresh · start light 12–16 kg · biggest new knee load: morning-after rule applies this first week"},
+      {n:"Warm-Up Block", sr:"~18 min", cue:"Walk 8 min → iso hamstring 1×10 → Captain Morgan 2×10 → glute bridges 2×15 → ramp"},
+      {n:"Hip Thrust", sr:"4 × 10", cue:"Heavy · 45 lb plate + climbing weekly · most headroom in the program"},
+      {n:"Goblet Split Squat (rear foot elevated)", sr:"3 × 10/side", cue:"12–16 kg · left leg first while fresh"},
       {n:"Weighted 45° Back Extension", sr:"3 × 12", cue:"Hinge, not lumbar hyperextension"},
-      {n:"Side Plank Clamshell", sr:"2 × 10/side", cue:"PROVISIONAL dose, sheet left it blank · confirm with PT"},
+      {n:"Side Plank Clamshell", sr:"2 × 10/side", cue:"PROVISIONAL dose · confirm with PT"},
       {n:"Hip Adduction", sr:"3 × 15", cue:"Machine"},
       {n:"Lateral Band + Monster Walks", sr:"3 × 10 steps", cue:"Stay low, tension on band"},
-      {n:"Eccentric Heel Raise", sr:"3 × 10", cue:"Dose #3 of the week · lower on left 3–4 sec · note left-leg quality"},
       {n:"Tibialis Raises", sr:"3 × 15-20", cue:"Slow"},
       {n:"Farmer Carry", sr:"3 × 30-40 m", cue:"Tall posture, even grip"},
-      {n:"Cable Crunch", sr:"3 × 12-15", cue:"Upper abs"},
-      {n:"Plank", sr:"3 × 40s", cue:"Core tight"},
-      {n:"Hip Finisher", sr:"—", cue:"90/90, couch stretch, figure-4 · SL-RDL not repeated here, absorbed by Wednesday per overlap rule"},
+      {n:"Hip Finisher", sr:"—", cue:"90/90 · couch stretch · figure-4"},
+      {n:"Pallof Press", sr:"3 × 12/side", cue:"Obliques pair, part 1"},
+      {n:"Side Plank", sr:"3 × 30s", cue:"Obliques pair, part 2"},
+      {n:"Daily PT Layer", sr:"→ Daily tab", cue:"After hip finisher · step downs skipped today"},
     ],
-    meals:[], supps:[]},
+    meals:[], supps:ptLayer("after hip finisher · NO step downs today (split squats cover the single-leg eccentric knee work · confirm with PT, item 4)", true, "full")},
 
-  6:{name:"Saturday", focus:"Upper #2 + VO2 + Lower Abs", hue:"#2FB3A8",
+  4:{name:"Thursday", focus:"Light · Walk + Mobility · No Abs", hue:"#8DA0B8",
     kcal:"1,900", burn:"—", p:"110–133g", c:"—", f:"—",
     workout:[
-      {n:"Incline BB Press", sr:"4 × 8", cue:"Controlled descent"},
-      {n:"EZ-Bar Curl", sr:"3 × 8-10", cue:"No swing"},
-      {n:"Skull Crushers", sr:"3 × 10-12", cue:"Elbows in"},
-      {n:"Cable Row", sr:"4 × 10", cue:"Squeeze shoulder blades"},
-      {n:"Machine Press", sr:"3 × 12", cue:"Constant tension"},
-      {n:"Wide Pulldown", sr:"3 × 10-12", cue:"To upper chest"},
-      {n:"Lateral Raises", sr:"4 × 15", cue:"Light, strict"},
-      {n:"VO2 Block", sr:"25 min", cue:"Weeks 3–4: Zone 2 incline 25 min · weeks 5–8: tempo 4×4 · weeks 9–12: hard 4×4"},
+      {n:"Brisk Incline Walk", sr:"45 min", cue:"6–8% incline"},
+      {n:"Long-Hold Mobility Block", sr:"20 min", cue:"Long holds, easy breathing"},
+      {n:"Daily PT Layer", sr:"→ Daily tab", cue:"Showcase day: unhurried, quality reps"},
+    ],
+    meals:[], supps:ptLayer("showcase day: unhurried, quality reps", false, "step downs + single-leg stance barefoot")},
+
+  5:{name:"Friday", focus:"Upper #2 · Arms Early + Upper Abs + Cuff", hue:"#2FB3A8",
+    kcal:"1,900", burn:"—", p:"110–133g", c:"—", f:"—",
+    workout:[
+      {n:"Incline Barbell Press", sr:"4 × 8", cue:"~95–105 lb, to RPE 8"},
+      {n:"EZ-Bar Curl", sr:"3 × 8-10", cue:"Heavy · arms early by design"},
+      {n:"Skull Crushers or Incline Overhead Ext", sr:"3 × 10-12", cue:"Pick one"},
+      {n:"Arnold Press", sr:"3 × 10", cue:"Pain-free range only"},
+      {n:"High Row", sr:"3 × 10-12", cue:"Elbows high"},
+      {n:"DB Chest Press", sr:"3 × 12", cue:"Constant tension"},
+      {n:"Bent-Over Cable Rear Delt", sr:"3 × 15", cue:"Light, strict"},
+      {n:"Side-Lying External Rotations", sr:"2 × 15/side", cue:"Cuff work, light"},
+      {n:"Cable Crunch", sr:"3 × 12-15", cue:"Upper abs"},
+      {n:"Plank", sr:"3 × 40s", cue:"Core tight"},
+    ],
+    meals:[], supps:ptLayer("home, morning or evening", false, "")},
+
+  6:{name:"Saturday", focus:"Accessories + VO2 + Lower Abs", hue:"#E8B93E",
+    kcal:"1,900", burn:"—", p:"110–133g", c:"—", f:"—",
+    workout:[
+      {n:"Wide-Grip Lat Pulldown", sr:"3 × 10-12 @ 85–100", cue:"To upper chest"},
+      {n:"DB Lateral Raises", sr:"4 × 15", cue:"Light, strict"},
+      {n:"Hammer or Preacher Curl", sr:"2 × 12", cue:"Arm top-up"},
+      {n:"Rope Pushdown", sr:"2 × 15", cue:"Arm top-up"},
+      {n:"Face Pulls", sr:"2 × 15-20", cue:"Rear delts"},
+      {n:"VO2 Block", sr:"30 min", cue:"The day's main event · wk 3–4 Zone 2 incline 30 min → wk 5–8 tempo 4×4/3 → wk 9–12 hard 4×4 · bike/jog as PT clears · if hard intervals precede a Sunday load-jump week, swap this block to Friday"},
       {n:"Hanging Leg Raises", sr:"3 × 12", cue:"Lower abs"},
       {n:"Dead Bugs", sr:"3 × 10/side", cue:"Low back pressed down"},
-      {n:"Seated Bent-Knee Calf Isometrics", sr:"5 × 30s", cue:"Only on days without eccentric heel raises"},
+      {n:"Daily PT Layer", sr:"→ Daily tab", cue:"After the VO2 block, before leaving the gym"},
     ],
-    meals:[], supps:[]},
+    meals:[], supps:ptLayer("after VO2 block, before leaving the gym", false, "")},
 };
 
 const CARB_COLORS = {HIGH:"#3BD584", MEDIUM:"#E8B93E", LOW:"#E86A5E"};
-const NON_NEG = ["Steps ≥ 8,000", "Sleep ≥ 7:15", "Morning knee score + HRV", "No cross-legged sitting"];
+const NON_NEG = ["Steps ≥ 8,000", "Sleep ≥ 7:15", "Morning knee score + weight (fasted)", "No cross-legged sitting"];
 const DAY_ORDER = [1,2,3,4,5,6,0];
 const DAY_LETTERS = {1:"M",2:"T",3:"W",4:"T",5:"F",6:"S",0:"S"};
 
